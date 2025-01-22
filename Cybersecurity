@@ -1,0 +1,78 @@
+
+
+
+#Network Scanner
+import socket
+import ipaddress
+
+def scan_ports(host):
+    print(f"Scanning host: {host}")
+    try:
+        ip = ipaddress.ip_address(host)
+        print(f"Valid IP: {ip}")
+    except ValueError:
+        print(f"Invalid IP: {host}")
+        return
+
+    for port in range(1, 1025):  # Scans ports 1 through 1024
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            result = s.connect_ex((host, port))
+            if result == 0:
+                print(f"Port {port} is open.")
+
+if __name__ == "__main__":
+    target = input("Enter the target IP address: ")
+    scan_ports(target)
+
+
+
+#basic cryptography 
+def caesar_cipher(text, shift, mode='encrypt'):
+    shift = shift % 26
+    if mode == 'decrypt':
+        shift = -shift
+    result = ""
+
+    for char in text:
+        if char.isalpha():
+            base = 65 if char.isupper() else 97
+            result += chr((ord(char) - base + shift) % 26 + base)
+        else:
+            result += char
+    return result
+
+if __name__ == "__main__":
+    message = input("Enter your message: ")
+    shift_value = int(input("Enter the shift value: "))
+    operation = input("Type 'encrypt' or 'decrypt': ").lower()
+
+    if operation not in ['encrypt', 'decrypt']:
+        print("Invalid operation. Choose 'encrypt' or 'decrypt'.")
+    else:
+        output = caesar_cipher(message, shift_value, mode=operation)
+        print(f"Output: {output}")
+
+
+
+#vunrebaility-sql injection test
+import requests
+
+def sql_injection_test(url, param):
+    payload = "' OR '1'='1"
+    params = {param: payload}
+    print(f"Testing {url} with parameter {param}...")
+
+    try:
+        response = requests.get(url, params=params, timeout=5)
+        if "SQL syntax" in response.text or "mysql" in response.text.lower():
+            print("[!] Potential SQL Injection vulnerability detected!")
+        else:
+            print("[+] No SQL Injection vulnerability detected.")
+    except requests.RequestException as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    target_url = input("Enter the target URL (e.g., http://example.com/page): ")
+    parameter = input("Enter the parameter to test (e.g., 'id'): ")
+    sql_injection_test(target_url, parameter)
